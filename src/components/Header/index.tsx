@@ -1,6 +1,5 @@
 import format from 'date-fns/format';
-import { ptBR } from 'date-fns/locale';
-import ptbr from 'date-fns/locale/pt-BR';
+import  ptBR  from 'date-fns/locale/pt-BR';
 
 import styles from './styles.module.scss';
 

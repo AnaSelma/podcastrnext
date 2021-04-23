@@ -1,11 +1,14 @@
+import { useContext} from 'react';
 import { GetStaticProps } from 'next';
 import Image from 'next/image'
 import Link from 'next/link'
 import { format, parseISO } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
+
 import { api } from '../services/api';
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
-
+import { PlayerContext} from '../contexts/PlayerContext';
+ 
 import styles from './home.module.scss';
 
 type Episode = {
@@ -20,18 +23,20 @@ type Episode = {
 }
 
 type HomeProps = {
-  latestEdpisodes: Episode[]
+  latestEpisodes: Episode[]
   allEpisodes: Episode[]
 }
 
-export default function Home({ latestEdpisodes ,allEpisodes }: HomeProps) {
+export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
+  const { play } = useContext(PlayerContext)
+  
   return (
     <div className={styles.homepage}>
-      <section className={styles.latestEdpisodes}>
+      <section className={styles.latestEpisodes}>
         <h2>Últimos lançamentos</h2>
 
         <ul>
-          {latestEdpisodes.map(episode => {
+          {latestEpisodes.map(episode => {
               return (
                 <li key={episode.id}>
                   <Image 
@@ -51,12 +56,12 @@ export default function Home({ latestEdpisodes ,allEpisodes }: HomeProps) {
                     <span>{episode.durationAsString}</span>
                   </div>
 
-                  <button type="button">
+                  <button type="button" onClick={() => play(episode)}>
                     <img src="/play-green.svg" alt="Tocar episódio"/>
                   </button>
                 </li>
               )
-            })}
+          } ) }
         </ul>
       </section>
 
@@ -132,12 +137,12 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   })
 
-  const latestEdpisodes = episodes.slice(0, 2)
-  const allEpisodes = episodes.slice(2, episodes.length)
+  const latestEpisodes = episodes.slice(0, 2);
+  const allEpisodes = episodes.slice(2, episodes.length);
   
   return {
     props: {
-      latestEdpisodes,
+      latestEpisodes,
       allEpisodes,
     },
     revalidate: 60 * 60 * 8,
